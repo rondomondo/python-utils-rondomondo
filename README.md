@@ -18,32 +18,64 @@ uv add python-utils-rondomondo
 
 ```python
 from python_utils.dates import now_utc, parse_duration, date_windows
-from python_utils.money import format_currency, allocate, round_half_up
+from python_utils.money import to_money, format_currency, allocate, fmt_accounting
 ```
 
 ### Dates
 
+| Function | Description |
+|---|---|
+| `now_utc(microsecond=False)` | Current UTC datetime, always timezone-aware |
+| `to_iso(dt, timespec="seconds")` | Format datetime as ISO 8601 string (space separator) |
+| `from_iso(s)` | Parse ISO 8601 string to datetime |
+| `parse_duration(s)` | Parse human duration like `"7days"`, `"3hrs"`, `"90secs"` to `timedelta` |
+| `midnight_before(dt)` | Midnight at the start of the day before `dt` |
+| `date_windows(start, end, window)` | Split a range into non-overlapping `timedelta` windows |
+| `is_leap(year)` | True if the given year is a leap year |
+| `same_day_next_year(dt)` | Advance by one calendar year, clamping Feb 29 to Feb 28 |
+
 ```python
-from python_utils.dates import now_utc, parse_duration, to_iso
+from python_utils.dates import now_utc, parse_duration, date_windows, to_iso
+from datetime import timedelta
 
 now = now_utc()
-delta = parse_duration("7days")
-print(to_iso(now))
+end = now + parse_duration("7days")
+windows = date_windows(now, end, timedelta(days=2))
+print(to_iso(now))  # '2026-05-19 14:30:00+00:00'
 ```
 
 ### Money
 
+| Function | Description |
+|---|---|
+| `to_money(value)` | Convert `str`, `int`, or `Decimal` to a cent-quantised `Decimal` (half-up) |
+| `to_decimal(value)` | Convert `int`, `float`, `str`, or `Decimal` to `Decimal` without rounding |
+| `round_half_up(amount, places=2)` | Round using half-up convention |
+| `round_bankers(amount, places=2)` | Round using banker's rounding (half to even) |
+| `truncate(amount, places=2)` | Truncate toward zero |
+| `format_currency(amount, symbol="$", thousands=True)` | Format `Decimal` as a currency string |
+| `parse_currency(s)` | Parse a currency string like `"$1,234.56"` or `"-£99.00"` to `Decimal` |
+| `fmt_accounting(value)` | Accounting convention: negatives as `(120.00)`, positives as `500.00 ` |
+| `allocate(amount, ratios)` | Distribute amount across ratios with no penny lost or gained |
+
 ```python
 from decimal import Decimal
-from python_utils.money import format_currency, allocate
+from python_utils.money import to_money, format_currency, fmt_accounting, allocate
 
-print(format_currency(Decimal("1234.5")))   # $1,234.50
-shares = allocate(Decimal("100.00"), [1, 2, 3])
+price = to_money("19.99")
+tax   = to_money(price * Decimal("0.1"))  # 2.00
+total = price + tax                       # 21.99
+
+print(format_currency(total))             # '$21.99'
+print(fmt_accounting(Decimal("-120.00"))) # '(120.00)'
+print(fmt_accounting(Decimal("500.00"))) # '500.00 '
+
+shares = allocate(Decimal("100.00"), [1, 2, 3])  # [33.33, 33.33, 33.34] (sums exactly)
 ```
 
 ## Requirements
 
-Python 3.11+
+Python 3.12+
 
 ## License
 

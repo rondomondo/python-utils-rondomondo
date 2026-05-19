@@ -49,6 +49,32 @@ lint: check-venv ## Lint (ruff + mypy)
 test: check-venv ## Run tests
 	$(PYTEST) tests/ -v --tb=short
 
+.PHONY: bump-patch bump-minor bump-major
+
+bump-patch: ## Bump patch version in pyproject.toml (0.1.2 -> 0.1.3)
+	@old=$$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/'); \
+	maj=$$(echo $$old | cut -d. -f1); \
+	min=$$(echo $$old | cut -d. -f2); \
+	pat=$$(echo $$old | cut -d. -f3); \
+	new="$$maj.$$min.$$((pat + 1))"; \
+	sed -i '' "s/^version = \"$$old\"/version = \"$$new\"/" pyproject.toml; \
+	printf "  $(GREEN)$$old$(RESET) -> $(GREEN)$$new$(RESET)\n"
+
+bump-minor: ## Bump minor version in pyproject.toml (0.1.2 -> 0.2.0)
+	@old=$$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/'); \
+	maj=$$(echo $$old | cut -d. -f1); \
+	min=$$(echo $$old | cut -d. -f2); \
+	new="$$maj.$$((min + 1)).0"; \
+	sed -i '' "s/^version = \"$$old\"/version = \"$$new\"/" pyproject.toml; \
+	printf "  $(GREEN)$$old$(RESET) -> $(GREEN)$$new$(RESET)\n"
+
+bump-major: ## Bump major version in pyproject.toml (0.1.2 -> 1.0.0)
+	@old=$$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/'); \
+	maj=$$(echo $$old | cut -d. -f1); \
+	new="$$((maj + 1)).0.0"; \
+	sed -i '' "s/^version = \"$$old\"/version = \"$$new\"/" pyproject.toml; \
+	printf "  $(GREEN)$$old$(RESET) -> $(GREEN)$$new$(RESET)\n"
+
 .PHONY: build
 build: check-venv ## Build wheel and sdist into dist/
 	$(UV) build

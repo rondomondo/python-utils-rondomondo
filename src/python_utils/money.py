@@ -3,6 +3,34 @@ from typing import Sequence
 
 CENT = Decimal("0.01")
 
+
+def to_money(value: str | int | Decimal) -> Decimal:
+    """Convert a value to a Decimal rounded to the nearest cent (half-up).
+
+    Args:
+        value: a string, integer, or Decimal monetary amount.
+
+    Returns:
+        Decimal quantized to two decimal places.
+    """
+    return Decimal(str(value)).quantize(CENT, rounding=ROUND_HALF_UP)
+
+
+def fmt_accounting(value: Decimal) -> str:
+    """Format a Decimal using accounting convention: negatives in parentheses.
+
+    Args:
+        value: the amount to format.
+
+    Returns:
+        A string like '1,234.56 ' for positives or '(1,234.56)' for negatives.
+        Positive values are padded with a trailing space so columns align.
+    """
+    if value < 0:
+        return f"({abs(value):,.2f})"
+    return f"{value:,.2f} "
+
+
 def to_decimal(value: int | float | str | Decimal) -> Decimal:
     """Convert a numeric value to Decimal."""
     return Decimal(str(value))

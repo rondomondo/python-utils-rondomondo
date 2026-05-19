@@ -6,11 +6,13 @@ from decimal import Decimal, InvalidOperation
 from python_utils.money import (
     CENT,
     allocate,
+    fmt_accounting,
     format_currency,
     parse_currency,
     round_bankers,
     round_half_up,
     to_decimal,
+    to_money,
     truncate,
 )
 
@@ -210,3 +212,48 @@ class TestAllocate:
 
     def test_cent_constant(self) -> None:
         assert CENT == Decimal("0.01")
+
+
+class TestToMoney:
+    def test_string(self) -> None:
+        assert to_money("19.99") == Decimal("19.99")
+
+    def test_int(self) -> None:
+        assert to_money(5) == Decimal("5.00")
+
+    def test_decimal_passthrough(self) -> None:
+        assert to_money(Decimal("3.14")) == Decimal("3.14")
+
+    def test_rounds_half_up(self) -> None:
+        # 0.1 * 19.99 = 1.999 -> rounds to 2.00
+        assert to_money(Decimal("1.999")) == Decimal("2.00")
+
+    def test_rounds_down_below_half(self) -> None:
+        assert to_money(Decimal("1.994")) == Decimal("1.99")
+
+    def test_zero(self) -> None:
+        assert to_money(0) == Decimal("0.00")
+
+    def test_negative(self) -> None:
+        assert to_money("-9.995") == Decimal("-10.00")
+
+
+class TestFmtAccounting:
+    def test_positive(self) -> None:
+        assert fmt_accounting(Decimal("500.00")) == "500.00 "
+
+    def test_negative_parentheses(self) -> None:
+        assert fmt_accounting(Decimal("-120.00")) == "(120.00)"
+
+    def test_zero_is_positive(self) -> None:
+        assert fmt_accounting(Decimal("0.00")) == "0.00 "
+
+    def test_thousands_separator(self) -> None:
+        assert fmt_accounting(Decimal("1234567.89")) == "1,234,567.89 "
+
+    def test_negative_thousands(self) -> None:
+        assert fmt_accounting(Decimal("-1234.56")) == "(1,234.56)"
+
+    def test_trailing_space_pads_positive(self) -> None:
+        # Trailing space on positives reserves room for a closing paren on the right
+        assert fmt_accounting(Decimal("100.00")).endswith(" ")

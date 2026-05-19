@@ -18,7 +18,7 @@ uv add python-utils-rondomondo
 
 ```python
 from python_utils.dates import now_utc, parse_duration, date_windows
-from python_utils.money import to_money, format_currency, allocate, fmt_accounting
+from python_utils.money import to_money, fmt_accounting, format_currency, allocate
 ```
 
 ### Dates
@@ -71,6 +71,24 @@ print(fmt_accounting(Decimal("-120.00"))) # '(120.00)'
 print(fmt_accounting(Decimal("500.00"))) # '500.00 '
 
 shares = allocate(Decimal("100.00"), [1, 2, 3])  # [33.33, 33.33, 33.34] (sums exactly)
+```
+
+## Examples
+
+### F-string formatting reference
+
+[`src/python_utils/examples/fstrings.py`](src/python_utils/examples/fstrings.py) is a runnable reference script covering the full range of Python f-string format specs, using an invoice as the running example:
+
+- Number formatting: decimal places, thousands separators, alignment, currency symbols
+- Sign formatting: explicit `+`, space padding, accounting parentheses
+- Integer bases: hex, octal, binary, scientific notation, percent
+- String alignment, padding, fill characters, truncation
+- Expressions, conditionals, and method calls inside f-strings
+- Conversion flags: `!s`, `!r`, `!a`
+- A complete invoice table tying all patterns together
+
+```bash
+python src/python_utils/examples/fstrings.py
 ```
 
 ## Requirements

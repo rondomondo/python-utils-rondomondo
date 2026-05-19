@@ -1,11 +1,58 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=72"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "python-utils-rondomondo"
 version = "0.1.0"
+description = "Reusable Python utilities for dates, money, and more"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.11"
+authors = [{ name = "David Kierans", email = "dave@abcdef.ai" }]
+keywords = ["utilities", "dates", "money", "decimal", "datetime"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "ruff>=0.4",
+    "mypy>=1.9",
+]
+
+[project.urls]
+Repository = "https://github.com/rondomondo/python-utils-rondomondo"
+Issues = "https://github.com/rondomondo/python-utils-rondomondo/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+"python_utils" = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 119
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = false
+ignore_missing_imports = true

@@ -14,22 +14,18 @@ _UNIT_MAP: dict[str, str] = {
     for unit in units
 }
 
-
 def now_utc(microsecond: bool = False) -> datetime:
     """Return the current UTC datetime, always timezone-aware."""
     dt = datetime.now(timezone.utc)
     return dt if microsecond else dt.replace(microsecond=0)
 
-
 def to_iso(dt: datetime, timespec: str = "seconds") -> str:
     """Format a datetime as an ISO 8601 string."""
     return dt.isoformat(sep=" ", timespec=timespec)
 
-
 def from_iso(s: str) -> datetime:
     """Parse an ISO 8601 string to a datetime."""
     return datetime.fromisoformat(s)
-
 
 def parse_duration(duration: str) -> timedelta:
     """Parse a human duration string like '7days', '3hrs', '90secs' to timedelta."""
@@ -44,12 +40,10 @@ def parse_duration(duration: str) -> timedelta:
         raise ValueError(f"Unknown unit {unit!r} in {duration!r}")
     return timedelta(**{param: int(m_int.group())})
 
-
 def midnight_before(dt: datetime) -> datetime:
     """Return midnight at the start of the day before dt."""
     day_start = datetime.combine(dt.date(), datetime.min.time(), tzinfo=dt.tzinfo)
     return day_start - timedelta(days=1)
-
 
 def date_windows(start: datetime, end: datetime, window: timedelta) -> list[tuple[datetime, datetime]]:
     """Split [start, end] into non-overlapping windows of the given size."""
@@ -61,11 +55,9 @@ def date_windows(start: datetime, end: datetime, window: timedelta) -> list[tupl
         cursor = win_end
     return windows
 
-
 def is_leap(year: int) -> bool:
     """Return True if the given year is a leap year."""
     return calendar.isleap(year)
-
 
 def same_day_next_year(dt: datetime) -> datetime:
     """Advance by one calendar year, clamping Feb 29 to Feb 28 in non-leap years."""

@@ -3,29 +3,24 @@ from typing import Sequence
 
 CENT = Decimal("0.01")
 
-
 def to_decimal(value: int | float | str | Decimal) -> Decimal:
     """Convert a numeric value to Decimal."""
     return Decimal(str(value))
-
 
 def round_half_up(amount: Decimal, places: int = 2) -> Decimal:
     """Round using half-up convention."""
     quantize_str = Decimal(10) ** -places
     return amount.quantize(quantize_str, rounding=ROUND_HALF_UP)
 
-
 def round_bankers(amount: Decimal, places: int = 2) -> Decimal:
     """Round using banker's rounding (round half to even)."""
     quantize_str = Decimal(10) ** -places
     return amount.quantize(quantize_str, rounding=ROUND_HALF_EVEN)
 
-
 def truncate(amount: Decimal, places: int = 2) -> Decimal:
     """Truncate toward zero."""
     quantize_str = Decimal(10) ** -places
     return amount.quantize(quantize_str, rounding=ROUND_DOWN)
-
 
 def format_currency(amount: Decimal, symbol: str = "$", thousands: bool = True) -> str:
     """Format a Decimal as a currency string."""
@@ -38,14 +33,12 @@ def format_currency(amount: Decimal, symbol: str = "$", thousands: bool = True) 
     sign = "-" if negative else ""
     return f"{sign}{symbol}{integer_part}.{frac_part}"
 
-
 def parse_currency(s: str) -> Decimal:
     """Parse a currency string like '$1,234.56' or '-£99.00' to Decimal."""
     cleaned = s.strip().lstrip("+-")
     sign = -1 if s.strip().startswith("-") else 1
     cleaned = "".join(c for c in cleaned if c.isdigit() or c == ".")
     return Decimal(cleaned) * sign
-
 
 def allocate(amount: Decimal, ratios: Sequence[int]) -> list[Decimal]:
     """Distribute amount across ratios with no penny lost or gained."""
